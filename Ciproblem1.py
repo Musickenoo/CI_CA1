@@ -123,7 +123,7 @@ input_size = 8
 hidden_size = 8 # สามารถกำหนดเองได้
 output_size = 1
 
-#initialize weight แตกต่างกัน โดย สร้างตัวแปร array สุ่มค่า weight และ bias เริ่มต้น รวมถึง สร้างตัวแปร array สำหรับสุ่มค่าสำหรับอัปเดทค่า weight และ bias เริ่มต้น
+#initialize weight แตกต่างกัน โดย สร้างตัวแปร array สุ่มค่า weight และ bias ปัจจุบัน รวมถึง สร้างตัวแปร array สุ่มค่า weight และ bias ก่อนหน้า
 #weight ระหว่าง input note เข้า hidden note
 w_input_to_hidden = np.random.randn(hidden_size, input_size)
 v_w_input_hidden = np.random.randn(hidden_size, input_size)
