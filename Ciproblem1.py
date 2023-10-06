@@ -123,22 +123,22 @@ input_size = 8
 hidden_size = 8 # สามารถกำหนดเองได้
 output_size = 1
 
-#สร้างตัวแปร array สุ่มค่า weight และ bias เริ่มต้น รวมถึง สร้างตัวแปร array ขนาดเท่ากัน สำหรับการอัปเดทค่า weight และ bias โดยเริ่มต้นที่ 1
+#initialize weight แตกต่างกัน โดย สร้างตัวแปร array สุ่มค่า weight และ bias เริ่มต้น รวมถึง สร้างตัวแปร array สำหรับสุ่มค่าสำหรับอัปเดทค่า weight และ bias เริ่มต้น
 #weight ระหว่าง input note เข้า hidden note
 w_input_to_hidden = np.random.randn(hidden_size, input_size)
-v_w_input_hidden = np.ones_like(w_input_to_hidden)
+v_w_input_hidden = np.random.randn(hidden_size, input_size)
 
 #weight ระหว่าง hidden note เข้า output note
 w_hidden_to_output = np.random.randn(output_size, hidden_size)
-v_w_hidden_output = np.ones_like(w_hidden_to_output)
+v_w_hidden_output = np.random.randn(output_size, hidden_size)
     
 #bias เข้า hidden note 
 b_hidden = np.random.randn(hidden_size, 1)
-v_b_hidden = np.ones_like(b_hidden)
+v_b_hidden = np.random.randn(hidden_size, 1)
     
 #bias เข้า  note 
 b_output = np.random.randn(output_size, 1)
-v_b_output = np.ones_like(b_output)
+v_b_output = np.random.randn(output_size, 1)
 
 # ปรับ learning_rates และ momentum_rates ตามที่ต้องการ
 learning_rates = [0.01]
@@ -177,5 +177,4 @@ for lr in learning_rates:
            print(f"     {Actual[i]:<8} | {Predict[i]:<16}   | {abs(Actual[i]-Predict[i])}")
         
         print(f"************Accuracy = {Accuracy} % **************")
-        
         
