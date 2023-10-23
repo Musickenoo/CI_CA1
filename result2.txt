@@ -1,0 +1,145 @@
+******************************************************************
+hidden = 2 , epoch = 100
+******************************************************************
+Training with learning rate = 0.01 and momentum = 0.1
+Epoch loop: 1, Error: [0.25701058 0.34167015]
+[[ 8  0]
+ [12  0]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.01 and momentum = 0.2
+Epoch loop: 1, Error: [0.25081426 0.24917094]
+[[ 8  0]
+ [12  0]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.01 and momentum = 0.3
+Epoch loop: 1, Error: [0.250813   0.24916455]
+[[ 8  0]
+ [12  0]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.1 and momentum = 0.1
+Epoch loop: 1, Error: [0.25081159 0.24915767]
+[[ 8  0]
+ [12  0]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.1 and momentum = 0.2
+Epoch loop: 1, Error: [0.25080127 0.24910979]
+[[ 8  0]
+ [12  0]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.1 and momentum = 0.3
+Epoch loop: 1, Error: [0.25079101 0.2490645 ]
+[[ 8  0]
+ [12  0]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.2 and momentum = 0.1
+Epoch loop: 1, Error: [0.25078073 0.24901897]
+[[ 8  0]
+ [12  0]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.2 and momentum = 0.2
+Epoch loop: 1, Error: [0.25076684 0.24895238]
+[[ 8  0]
+ [12  0]]
+************Accuracy = 40.0 % **************
+******************************************************************
+hidden = 8 , epoch = 100
+******************************************************************
+Training with learning rate = 0.01 and momentum = 0.1
+Epoch loop: 1, Error: [0.27917007 0.34566186]
+[[ 0  8]
+ [ 0 12]]
+************Accuracy = 60.0 % **************
+Training with learning rate = 0.01 and momentum = 0.2
+Epoch loop: 1, Error: [0.25227743 0.25041376]
+[[ 8  0]
+ [12  0]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.01 and momentum = 0.3
+Epoch loop: 1, Error: [0.25156215 0.2495363 ]
+[[ 8  0]
+ [12  0]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.1 and momentum = 0.1
+Epoch loop: 1, Error: [0.25133839 0.24948636]
+[[ 6  2]
+ [12  0]]
+************Accuracy = 30.0 % **************
+Training with learning rate = 0.1 and momentum = 0.2
+Epoch loop: 1, Error: [0.25002129 0.24914199]
+[[ 6  2]
+ [12  0]]
+************Accuracy = 30.0 % **************
+Training with learning rate = 0.1 and momentum = 0.3
+Epoch loop: 1, Error: [0.24914008 0.24880561]
+[[ 5  3]
+ [11  1]]
+************Accuracy = 30.0 % **************
+Training with learning rate = 0.2 and momentum = 0.1
+Epoch loop: 1, Error: [0.24856324 0.24847125]
+[[5 3]
+ [9 3]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.2 and momentum = 0.2
+Epoch loop: 1, Error: [0.24808822 0.24802417]
+[[4 4]
+ [8 4]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.2 and momentum = 0.3
+Epoch loop: 1, Error: [0.24777923 0.2475836 ]
+[[3 5]
+ [7 5]]
+************Accuracy = 40.0 % **************
+Training with learning rate = 0.2 and momentum = 0.3
+Epoch loop: 1, Error: [0.2507524  0.24887346]
+[[ 4  4]
+ [11  1]]
+************Accuracy = 25.0 % **************
+******************************************************************
+hidden = 16 , epoch = 100
+******************************************************************
+Training with learning rate = 0.01 and momentum = 0.1
+Epoch loop: 1, Error: [0.28394183 0.27882473]
+[[6 5]
+ [1 8]]
+************Accuracy = 70.0 % **************
+Training with learning rate = 0.01 and momentum = 0.2
+Epoch loop: 1, Error: [0.25383811 0.24739537]
+[[6 5]
+ [1 8]]
+************Accuracy = 70.0 % **************
+Training with learning rate = 0.01 and momentum = 0.3
+Epoch loop: 1, Error: [0.25352299 0.24726384]
+[[6 5]
+ [1 8]]
+************Accuracy = 70.0 % **************
+Training with learning rate = 0.1 and momentum = 0.1
+Epoch loop: 1, Error: [0.25318594 0.24711847]
+[[6 5]
+ [1 8]]
+************Accuracy = 70.0 % **************
+Training with learning rate = 0.1 and momentum = 0.2
+Epoch loop: 1, Error: [0.25110116 0.24610867]
+[[6 5]
+ [2 7]]
+************Accuracy = 65.0 % **************
+Training with learning rate = 0.1 and momentum = 0.3
+Epoch loop: 1, Error: [0.24956572 0.24517685]
+[[6 5]
+ [2 7]]
+************Accuracy = 65.0 % **************
+Training with learning rate = 0.2 and momentum = 0.1
+Epoch loop: 1, Error: [0.24842064 0.24430119]
+[[5 6]
+ [1 8]]
+************Accuracy = 65.0 % **************
+Training with learning rate = 0.2 and momentum = 0.2
+Epoch loop: 1, Error: [0.24728067 0.24319835]
+[[5 6]
+ [2 7]]
+************Accuracy = 60.0 % **************
+Training with learning rate = 0.2 and momentum = 0.3
+Epoch loop: 1, Error: [0.24638563 0.24217128]
+[[4 7]
+ [2 7]]
+************Accuracy = 55.00000000000001 % **************
+สรุปผลการทดลองอยู่ใน ไฟส์ที่ชื่อว่า "Summary_result"
