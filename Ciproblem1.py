@@ -5,18 +5,24 @@ def read_file(filename):
     matrix = np.loadtxt(filename, dtype=int)
     return matrix
 
-#นำไฟส์มาสลับกันโดยแบ่งข้อมูล 90% ออกมาเป็น train_data และ ข้อมูลอีก 10% ออกมาเป็น test_data
-def gettrainandtest(data):
-    np.random.shuffle(data)
+#นำไฟส์มาทำ 10% cross validation โดยแบ่งข้อมูล 90% ออกมาเป็น train_data และ ข้อมูลอีก 10% ออกมาเป็น test_data เป็น 10 ช่วง
+def split_data_into_segments(data, num_segments):
+    segment_size = len(data) // num_segments
 
-    # แบ่งชุดข้อมูลเป็นส่วนเทรนและส่วนทดสอบ
-    split_ratio = 0.9
-    split_index = int(data.shape[0] * split_ratio)
+    test_data = []
+    train_data = []
 
-    train_data = data[:split_index, :]
-    test_data = data[split_index:, :]
-    
-    return train_data,test_data
+    for i in range(num_segments):
+        start = i * segment_size
+        end = (i + 1) * segment_size
+
+        test = data[start:end]
+        train = np.concatenate([data[:start], data[end:]])
+
+        test_data.append(test)
+        train_data.append(train)
+
+    return test_data, train_data
 
 #นำข้อมูล data.txt มาหา min และ max โดยการใช้ flatten เป็น array 1 มิติ
 def getmaxmin(data):
@@ -96,8 +102,8 @@ def train_custom_neural_network(inputdata, outputdata,Target_Epochs,Mean_Squared
         
         error = np.mean(output_error**2)
         #ปรับค่า epoch ที่ต้องการให้แสดงใน terminal
-        if epochs % 10000 == 0 : # epochs % 10000 == 0
-            print(f"Epoch loop: {epochs+10000}, Error: {error}")#epochs+10000
+        #if epochs % 100 == 0 : # epochs % 10000 == 0
+            #print(f"Epoch loop: {epochs+100}, Error: {error}")#epochs+10000
                    
         if error <= Mean_Squared_Error:
             break
@@ -116,65 +122,75 @@ def calculate_accuracy(actual, predicted):
 #นำไฟส์ data เข้า
 file = "dataval.txt"
 data = read_file(file)
-train, test = gettrainandtest(data)
+#print(data.shape)
+#print(data)
 
 # กำหนดขนาด Input layer, Hidden layer , Output layer จากชุดข้อมูลที่กำหนดให้
 input_size = 8
-hidden_size = 8 # สามารถกำหนดเองได้
+hidden_size = 4 # สามารถกำหนดเองได้
 output_size = 1
 
-#initialize weight แตกต่างกัน โดย สร้างตัวแปร array สุ่มค่า weight และ bias ปัจจุบัน รวมถึง สร้างตัวแปร array สุ่มค่า weight และ bias ก่อนหน้า
-#weight ระหว่าง input note เข้า hidden note
-w_input_to_hidden = np.random.randn(hidden_size, input_size)
-v_w_input_hidden = np.random.randn(hidden_size, input_size)
-
-#weight ระหว่าง hidden note เข้า output note
-w_hidden_to_output = np.random.randn(output_size, hidden_size)
-v_w_hidden_output = np.random.randn(output_size, hidden_size)
-    
-#bias เข้า hidden note 
-b_hidden = np.random.randn(hidden_size, 1)
-v_b_hidden = np.random.randn(hidden_size, 1)
-    
-#bias เข้า  note 
-b_output = np.random.randn(output_size, 1)
-v_b_output = np.random.randn(output_size, 1)
 
 # ปรับ learning_rates และ momentum_rates ตามที่ต้องการ
-learning_rates = [0.01]
-momentum_rates = [0.1]
+learning_rates = [0.1,0.5]
+momentum_rates = [0.01,0.2]
 
-for lr in learning_rates:
-    for momentum in momentum_rates:
-        print(f"Training with learning rate = {lr} and momentum = {momentum}")
+K_segments = 10
+
+print(f"Hidden node = {hidden_size}")
+
+for i in range(K_segments):
+    
+    #initialize weight แตกต่างกัน โดย สร้างตัวแปร array สุ่มค่า weight และ bias ปัจจุบัน รวมถึง สร้างตัวแปร array สุ่มค่า weight และ bias ก่อนหน้า
+    #weight ระหว่าง input note เข้า hidden note
+    w_input_to_hidden = np.random.randn(hidden_size, input_size)
+    v_w_input_hidden = np.random.randn(hidden_size, input_size)
+
+    #weight ระหว่าง hidden note เข้า output note
+    w_hidden_to_output = np.random.randn(output_size, hidden_size)
+    v_w_hidden_output = np.random.randn(output_size, hidden_size)
         
-        #แปลงข้อมูล train ในอยู่ในช่วง 0-1 โดยการใช้ normalize
-        inputtrain_data,outputrain_data = normalize_data(train)
+    #bias เข้า hidden note 
+    b_hidden = np.random.randn(hidden_size, 1)
+    v_b_hidden = np.random.randn(hidden_size, 1)
         
-        #นำข้อมูล train มาฝึกโดยสามารถกำหนด จำนวน epoch และ ค่าคลาดเคลื่อนเฉลี่ย MSE ที่ต้องการได้ 
-        train_custom_neural_network(inputtrain_data,outputrain_data, 50000, 0.0001, lr, momentum)
-        
-        #แปลงข้อมูล test ในอยู่ในช่วง 0-1 โดยการใช้ normalize    
-        inputtest_data,outputtest_data = normalize_data(test)
-        
-        #นำข้อมูล test เข้าไปหาค่า Predict output จากการเทรน
-        x,Aura=forward_propagation(inputtest_data)
-        
-        #แปลงข้อมูลจาก normalize เป็นฐานข้อมูลเดิม
-        Forture=inverse_normalize(Aura,test)
-        
-        #นำข้อมูล Predict output จาก Forture มาเก็บไว้ในตัวแปรใหม่
-        Predict = [item for sublist in Forture for item in sublist]
-        #นำข้อมูล Actual output จาก test มาเก็บไว้ในตัวแปรใหม่
-        Actual = test[:, 8]
-        
-        #หาค่าความแม่นยำ
-        Accuracy = calculate_accuracy(Actual,Predict)
-        
-        ########################## แสดงผล
-        print("Actual Output    Predict Output          error ")
-        for i in range(len(Actual)):
-           print(f"     {Actual[i]:<8} | {Predict[i]:<16}   | {abs(Actual[i]-Predict[i])}")
-        
-        print(f"************Accuracy = {Accuracy} % **************")
-        
+    #bias เข้า  note 
+    b_output = np.random.randn(output_size, 1)
+    v_b_output = np.random.randn(output_size, 1)
+
+    for lr in learning_rates:
+        for momentum in momentum_rates:
+            
+            test_data, train_data = split_data_into_segments(data, K_segments)
+            
+            print(f"segment ={i+1} Training with learning rate = {lr} and momentum = {momentum} ")
+            
+            #แปลงข้อมูล train ในอยู่ในช่วง 0-1 โดยการใช้ normalize
+            inputtrain_data,outputrain_data = normalize_data(train_data[i])
+            
+            #นำข้อมูล train มาฝึกโดยสามารถกำหนด จำนวน epoch และ ค่าคลาดเคลื่อนเฉลี่ย MSE ที่ต้องการได้ 
+            train_custom_neural_network(inputtrain_data,outputrain_data, 100, 0.0001, lr, momentum)
+            
+            #แปลงข้อมูล test ในอยู่ในช่วง 0-1 โดยการใช้ normalize    
+            inputtest_data,outputtest_data = normalize_data(test_data[i])
+            
+            #นำข้อมูล test เข้าไปหาค่า Predict output จากการเทรน
+            x,Aura=forward_propagation(inputtest_data)
+            
+            #แปลงข้อมูลจาก normalize เป็นฐานข้อมูลเดิม
+            Forture=inverse_normalize(Aura,test_data[i])
+            
+            #นำข้อมูล Predict output จาก Forture มาเก็บไว้ในตัวแปรใหม่
+            Predict = [item for sublist in Forture for item in sublist]
+            #นำข้อมูล Actual output จาก test มาเก็บไว้ในตัวแปรใหม่
+            Actual = test_data[i][:, 8]
+            
+            #หาค่าความแม่นยำ
+            Accuracy = calculate_accuracy(Actual,Predict)
+            
+            ########################## แสดงผล
+            print("Actual Output    Predict Output          error ")
+            for j in range(len(Actual)):
+                print(f"     {Actual[j]:<8} | {Predict[j]:<16}   | {abs(Actual[j]-Predict[j])}")
+                
+            print(f"************Accuracy = {Accuracy} % **************")
