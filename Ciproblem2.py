@@ -16,13 +16,38 @@ def read_cross_file(filename):
             data.append(label_data)
     return data
 
-def split_and_shuffle_data(data, train_ratio=0.9):
-    np.random.shuffle(data)
-    total_samples = len(data)
-    train_size = int(total_samples * train_ratio)
-    train_data = data[:train_size]
-    test_data = data[train_size:]
-    return train_data, test_data
+#นำไฟส์มาทำ 10% cross validation โดยแบ่งข้อมูล 90% ออกมาเป็น train_data และ ข้อมูลอีก 10% ออกมาเป็น test_data เป็น 10 ช่วง
+def split_data_into_segments(data, num_segments):
+    segment_size = len(data) // num_segments
+
+    test_data = np.empty(num_segments, dtype=object)
+    train_data = np.empty(num_segments, dtype=object)
+
+    for i in range(num_segments):
+        start = i * segment_size
+        end = (i + 1) * segment_size
+
+        # สร้างชุดข้อมูล test และ train
+        test = data[start:end]
+        train = data[:start] + data[end:]
+
+        test_data[i] = np.vstack(test)
+        train_data[i] = np.vstack(train)
+
+    return test_data, train_data
+
+#เปลี่ยนไฟส์เป็น list จาก NDArray
+def transform_data(input_data):
+    transformed_data = []
+    for row in input_data:
+        label = row[0]
+        coordinates = (row[1][0], row[1][1])
+        class1 = row[2]
+        class2 = row[3]
+        transformed_row = (label, coordinates, class1, class2)
+        transformed_data.append(transformed_row)
+    return transformed_data
+
 
 # แปลงข้อมูลเป็นรูปแบบที่เหมาะสำหรับ Neural Network
 def prepare_data(data):
@@ -79,8 +104,8 @@ def train_custom_neural_network(inputdata, outputdata,Target_Epochs,Mean_Squared
         update_input_hidden_layer_weights(inputdata, hidden_gradient, learning_rate, momentum_rate) 
         
         error = np.mean(output_error**2, axis=0)  # คำนวณ Output Error เฉลี่ยสำหรับแต่ละคลาส
-        if epochs % 10000 == 0:
-            print(f"Epoch loop: {epochs+10000}, Error: {error}")
+        #if epochs % 100 == 0:
+            #print(f"Epoch loop: {epochs+100}, Error: {error}")
             
         # เมื่อค่า error สำหรับแต่ละคลาสต่ำกว่าหรือเท่ากับ MSE ให้หยุดการฝึก
         if np.all(error <= Mean_Squared_Error):
@@ -97,80 +122,88 @@ def calculate_accuracy(TP, TN, FP, FN):
 ################################################# Main ####################################################################      
 filename = 'cross.txt'
 cross_data = read_cross_file(filename)
-train, test = split_and_shuffle_data(cross_data)
 
 input_size = 2
-hidden_size = 2 # สามารถกำหนดเองได้
+hidden_size = 4 # สามารถกำหนดเองได้
 output_size = 2
         
-#initialize weight แตกต่างกัน โดย สร้างตัวแปร array สุ่มค่า weight และ bias ปัจจุบัน รวมถึง สร้างตัวแปร array สุ่มค่า weight และ bias ก่อนหน้า
-#weight ระหว่าง input note เข้า hidden note
-w_input_to_hidden = np.random.randn(hidden_size, input_size)
-v_w_input_hidden = np.random.randn(hidden_size, input_size)
-
-#weight ระหว่าง hidden note เข้า output note
-w_hidden_to_output = np.random.randn(output_size, hidden_size)
-v_w_hidden_output = np.random.randn(output_size, hidden_size)
-    
-#bias เข้า hidden note 
-b_hidden = np.random.randn(hidden_size, 1)
-v_b_hidden = np.random.randn(hidden_size, 1)
-    
-#bias เข้า  note 
-b_output = np.random.randn(output_size, 1)
-v_b_output = np.random.randn(output_size, 1)
-
-
 # ปรับ learning_rates และ momentum_rates ตามที่ต้องการ    
-learning_rates = [ 0.1]
-momentum_rates = [ 0.01]
+learning_rates = [0.01,0.5]
+momentum_rates = [0.01,0.2]
+
+K_segments = 10
+
+print(f"Hidden node = {hidden_size} ")   
+for i in range(K_segments):
+    #initialize weight แตกต่างกัน โดย สร้างตัวแปร array สุ่มค่า weight และ bias ปัจจุบัน รวมถึง สร้างตัวแปร array สุ่มค่า weight และ bias ก่อนหน้า
+    #weight ระหว่าง input note เข้า hidden note
+    w_input_to_hidden = np.random.randn(hidden_size, input_size)
+    v_w_input_hidden = np.random.randn(hidden_size, input_size)
+
+    #weight ระหว่าง hidden note เข้า output note
+    w_hidden_to_output = np.random.randn(output_size, hidden_size)
+    v_w_hidden_output = np.random.randn(output_size, hidden_size)
+        
+    #bias เข้า hidden note 
+    b_hidden = np.random.randn(hidden_size, 1)
+    v_b_hidden = np.random.randn(hidden_size, 1)
+        
+    #bias เข้า  note 
+    b_output = np.random.randn(output_size, 1)
+    v_b_output = np.random.randn(output_size, 1)
+    for lr in learning_rates:
+        for momentum in momentum_rates: 
+            print(f"segment ={i+1} Training with learning rate = {lr} and momentum = {momentum} ")
+            
+            test,train= split_data_into_segments(cross_data,K_segments)
+            
+            #แปลงค่าจาก NDArray เป็น List
+            transformed_train_data = transform_data(train[i])
+            transformed_test_data = transform_data(test[i])
+            
+            # แยกชุดข้อมูล train 
+            inputtrain, outputtrain = prepare_data(transformed_train_data)
+        
+            #นำข้อมูล train มาฝึกโดยสามารถกำหนด จำนวน epoch และ ค่าคลาดเคลื่อนเฉลี่ย MSE ที่ต้องการได้ 
+            train_custom_neural_network(inputtrain,outputtrain, 100, 0.00001, lr, momentum)
+                
+            # แยกชุดข้อมูล test 
+            inputtest, outputtest = prepare_data(transformed_test_data)
+            
+            
+            #เปลี่ยนชื่อให้ง่ายต่อความเข้าใจ
+            Actual = outputtest
+            
+            #นำข้อมูล test เข้าไปหาค่า Predict output จากการเทรน
+            x,Predict = forward_propagation(inputtest)
+            
+            #แปลงข้อมูลจาก (2,20)->(20,2)
+            Predict = np.transpose(Predict)   
+            
+            # สร้าง confusion matrix
+            # กำหนดค่า Threshold เพื่อแปลงค่าความน่าจะเป็นเป็นค่าทางด้านไปหรือค่าทางด้านใน
+            threshold = 0.5
+            predicted = (Predict[:, 1] > threshold).astype(int)
+
+            # คำนวณ Confusion Matrix
+            confusion_matrix = np.zeros((2, 2), dtype=int)
+            for i in range(2):
+                for j in range(2):
+                    confusion_matrix[i, j] = np.sum((Actual[:, i] == 1) & (predicted == j))
+
+            # คำนวณ True Positive (TP), True Negative (TN), False Positive (FP), และ False Negative (FN)
+            TP = confusion_matrix[1, 1]
+            TN = confusion_matrix[0, 0]
+            FP = confusion_matrix[0, 1]
+            FN = confusion_matrix[1, 0]
+            Accuracy = calculate_accuracy(TP, TN, FP, FN)
+            
+            print("Confusion Matrix:")
+            print(confusion_matrix)
+            print("True Positive (TP):", TP)
+            print("True Negative (TN):", TN)
+            print("False Positive (FP):", FP)
+            print("False Negative (FN):", FN)
+            print(f"************Accuracy = {Accuracy} % **************")
     
-for lr in learning_rates:
-    for momentum in momentum_rates: 
-        print(f"Training with learning rate = {lr} and momentum = {momentum}")
-        
-        # แยกชุดข้อมูล train 
-        inputtrain, outputtrain = prepare_data(train)
-            
-        #นำข้อมูล train มาฝึกโดยสามารถกำหนด จำนวน epoch และ ค่าคลาดเคลื่อนเฉลี่ย MSE ที่ต้องการได้ 
-        train_custom_neural_network(inputtrain,outputtrain, 50000, 0.00001, lr, momentum)
-            
-        # แยกชุดข้อมูล test 
-        inputtest, outputtest = prepare_data(test)
-        
-        #เปลี่ยนชื่อให้ง่ายต่อความเข้าใจ
-        Actual = outputtest
-        
-        #นำข้อมูล test เข้าไปหาค่า Predict output จากการเทรน
-        x,Predict = forward_propagation(inputtest)
-        
-        #แปลงข้อมูลจาก (2,20)->(20,2)
-        Predict = np.transpose(Predict)   
-        
-        # สร้าง confusion matrix
-        # กำหนดค่า Threshold เพื่อแปลงค่าความน่าจะเป็นเป็นค่าทางด้านไปหรือค่าทางด้านใน
-        threshold = 0.5
-        predicted = (Predict[:, 1] > threshold).astype(int)
-
-        # คำนวณ Confusion Matrix
-        confusion_matrix = np.zeros((2, 2), dtype=int)
-        for i in range(2):
-            for j in range(2):
-                confusion_matrix[i, j] = np.sum((Actual[:, i] == 1) & (predicted == j))
-
-        # คำนวณ True Positive (TP), True Negative (TN), False Positive (FP), และ False Negative (FN)
-        TP = confusion_matrix[1, 1]
-        TN = confusion_matrix[0, 0]
-        FP = confusion_matrix[0, 1]
-        FN = confusion_matrix[1, 0]
-        Accuracy = calculate_accuracy(TP, TN, FP, FN)
-        
-        print("Confusion Matrix:")
-        print(confusion_matrix)
-        print("True Positive (TP):", TP)
-        print("True Negative (TN):", TN)
-        print("False Positive (FP):", FP)
-        print("False Negative (FN):", FN)
-        print(f"************Accuracy = {Accuracy} % **************")
- 
-
+  
